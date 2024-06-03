@@ -94,6 +94,8 @@ class Camelot
      */
     protected $rowTolerance;
 
+    protected $columnTolerance;
+
     /**
      * @var int
      */
@@ -194,6 +196,7 @@ class Camelot
         $strip = $this->unwantedCharacters ? " -strip '{$this->unwantedCharacters}'" : "";
         $edgeTolerance = $this->edgeTolerance ? " -e {$this->edgeTolerance}" : "";
         $rowTolerance = $this->rowTolerance ? " -r {$this->rowTolerance}" : "";
+        $columnTolerance = $this->columnTolerance ? " -r {$this->columnTolerance}" : "";
         $lineScale = $this->lineScale ? " -scale {$this->lineScale}" : "";
         $textShift = $this->textShift ? " -shift " . implode(" -shift ", $this->textShift) : "";
         $copyText = $this->copyTextDirections ? " -copy " . implode(" -copy ", $this->copyTextDirections) : "";
@@ -202,7 +205,7 @@ class Camelot
         $areas = $this->areas ? $this->areas->toDelimitedString(" -T ") : "";
         $regions = $this->regions ? $this->regions->toDelimitedString(" -R ") : "";
 
-        $cmd = "camelot --format csv {$output}{$pages}{$password}{$flagSize}{$split}{$strip}{$mode}{$textShift}{$copyText}{$lineScale}{$edgeTolerance}{$rowTolerance}{$background}{$plot}{$areas}{$regions}{$columnSeparators} " . $this->path;
+        $cmd = "camelot --format {$this->format} {$output}{$pages}{$password}{$flagSize}{$split}{$strip}{$mode}{$textShift}{$copyText}{$lineScale}{$edgeTolerance}{$rowTolerance}{$columnTolerance}{$background}{$plot}{$areas}{$regions}{$columnSeparators} " . $this->path;
 
         $process = Process::fromShellCommandline($cmd);
         $process->run();
@@ -344,6 +347,14 @@ class Camelot
     public function setRowTolerance(int $rowTolerance)
     {
         $this->rowTolerance = $rowTolerance;
+
+        return $this;
+    }
+
+
+    public function setColumnTolerance(int $columnTolerance)
+    {
+        $this->columnTolerance = $columnTolerance;
 
         return $this;
     }
