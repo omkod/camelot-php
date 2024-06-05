@@ -75,6 +75,16 @@ class Camelot
     protected $splitAlongSeparators;
 
     /**
+     * @var string
+     */
+    protected $margins;
+
+    /**
+     * @var bool
+     */
+    protected $splitText;
+
+    /**
      * @var bool
      */
     protected $flagSize;
@@ -191,12 +201,14 @@ class Camelot
         $background = $this->processBackgroundLines ? " --process_background " : "";
         $plot = $this->plot ? " -plot {$this->plot}" : "";
         $split = ($this->splitAlongSeparators && $this->columnSeparators) ? " -split" : "";
+        $splitText = $this->splitText ? " --split_text" : "";
         $flagSize = $this->flagSize ? " -flag" : "";
         $columnSeparators = $this->columnSeparators ? " -C " . implode(",",$this->columnSeparators) : "";
+        $margins = $this->margins ? " --margins " . implode(" ",$this->margins) : "";
         $strip = $this->unwantedCharacters ? " -strip '{$this->unwantedCharacters}'" : "";
         $edgeTolerance = $this->edgeTolerance ? " -e {$this->edgeTolerance}" : "";
         $rowTolerance = $this->rowTolerance ? " -r {$this->rowTolerance}" : "";
-        $columnTolerance = $this->columnTolerance ? " -r {$this->columnTolerance}" : "";
+        $columnTolerance = $this->columnTolerance ? " -c {$this->columnTolerance}" : "";
         $lineScale = $this->lineScale ? " -scale {$this->lineScale}" : "";
         $textShift = $this->textShift ? " -shift " . implode(" -shift ", $this->textShift) : "";
         $copyText = $this->copyTextDirections ? " -copy " . implode(" -copy ", $this->copyTextDirections) : "";
@@ -205,8 +217,8 @@ class Camelot
         $areas = $this->areas ? $this->areas->toDelimitedString(" -T ") : "";
         $regions = $this->regions ? $this->regions->toDelimitedString(" -R ") : "";
 
-        $cmd = "camelot --format {$this->format} {$output}{$pages}{$password}{$flagSize}{$split}{$strip}{$mode}{$textShift}{$copyText}{$lineScale}{$edgeTolerance}{$rowTolerance}{$columnTolerance}{$background}{$plot}{$areas}{$regions}{$columnSeparators} " . $this->path;
-
+        $cmd = "camelot {$splitText}{$margins} --format {$this->format} {$output}{$pages}{$password}{$flagSize}{$split}{$strip}{$mode}{$textShift}{$copyText}{$lineScale}{$edgeTolerance}{$rowTolerance}{$columnTolerance}{$background}{$plot}{$areas}{$regions}{$columnSeparators} " . $this->path;
+        
         $process = Process::fromShellCommandline($cmd);
         $process->run();
 
@@ -323,6 +335,23 @@ class Camelot
         return $this;
     }
 
+    public function setSplitText()
+    {
+        $this->splitText = true;
+
+        return $this;
+    }
+
+    /**
+     * @param array $margins Default: [1.0,0.5,0.1] , char_margin, line_margin and word_margin
+     * @return $this
+     */
+    public function setMargins($margins)
+    {
+        $this->margins = $margins;
+
+        return $this;
+    }
     public function flagSize($flag = true)
     {
         $this->flagSize = $flag;
@@ -337,6 +366,10 @@ class Camelot
         return $this;
     }
 
+    /**
+     * @param int $edgeTolerance Default 50
+     * @return $this
+     */
     public function setEdgeTolerance(int $edgeTolerance)
     {
         $this->edgeTolerance = $edgeTolerance;
@@ -344,6 +377,10 @@ class Camelot
         return $this;
     }
 
+    /**
+     * @param int $rowTolerance Default 2
+     * @return $this
+     */
     public function setRowTolerance(int $rowTolerance)
     {
         $this->rowTolerance = $rowTolerance;
@@ -351,7 +388,10 @@ class Camelot
         return $this;
     }
 
-
+    /**
+     * @param int $columnTolerance Default 0.
+     * @return $this
+     */
     public function setColumnTolerance(int $columnTolerance)
     {
         $this->columnTolerance = $columnTolerance;
